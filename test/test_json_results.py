@@ -9,7 +9,7 @@ def check_json(filename):
         data = json.load(file)
 
     # Check if the status field is valued "Failed"
-    if data.get('status') == 'Failed':
+    if data.get('status') != 'Completed':
         print("Status indicates failure")
         print(data.get('failure_reason'))
         return 1
