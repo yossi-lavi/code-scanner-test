@@ -2,6 +2,7 @@
 
 import argparse
 import json
+import sys
 
 def check_json(filename):
     # Read and load the JSON from the file
@@ -43,4 +44,6 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    rc=main()
+    sys.exit(rc)
+
