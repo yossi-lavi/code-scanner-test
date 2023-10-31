@@ -2,42 +2,59 @@
 
 import argparse
 import json
+import os
 import sys
 import traceback
 from collections import defaultdict
+
+GROUND_TRUTH_FILE_NAME = 'ground_truth_report.json'
+
+
+def ground_truth_path(generated_report):
+    assert 'language' in generated_report
+    language = generated_report['language']
+
+    if language == 'java':
+        path = os.path.join(language, 'bank', GROUND_TRUTH_FILE_NAME)
+
+    else:
+        assert 'not supported yet'
+
+    assert os.path.exists(path)
+    return path
 
 
 def check_json(filename):
     # Read and load the JSON from the file
     with open(filename, 'r') as file:
-        data = json.load(file)
+        generated_report = json.load(file)
 
     # Check if the status field is valued "Failed"
-    if data.get('status') != 'Completed':
+    if generated_report.get('status') != 'Completed':
         print("Status indicates failure")
-        print(data.get('failure_reason'))
+        print(generated_report.get('failure_reason'))
         return 1
 
-    with open('ground_truth_report.json') as report_json:
+    with open(ground_truth_path(generated_report)) as report_json:
         ground_truth_report = json.load(report_json)
 
     # Define the required engines
     required_engines = ground_truth_report['engines']
     # Check if the engines array contains the required engines
-    engines = data.get('engines', [])
+    engines = generated_report.get('engines', [])
     for engine in required_engines:
         if engine not in engines:
             print(f"Missing engine: {engine}")
             return 1
 
     # Check for the existence of artifacts
-    if not check_existence_of_artifacts(report_generated=data):
+    if not check_existence_of_artifacts(report_generated=generated_report):
         return 1
 
-    if not compare_flows(report_generated=data, report_expected=ground_truth_report):
+    if not compare_flows(report_generated=generated_report, report_expected=ground_truth_report):
         return 1
 
-    if not compare_persistency(report_generated=data, report_expected=ground_truth_report):
+    if not compare_persistency(report_generated=generated_report, report_expected=ground_truth_report):
         return 1
 
     print("All checks passed")
@@ -81,9 +98,10 @@ def compare_flows(report_generated, report_expected):
                 generated_flows = {flow_unique_key(flow) for flow in flow_in_generated}
                 if expected_flows != generated_flows:
                     compare_test_passed = False
-                    print(f'inconsistency between expected and generated flows category: {category}, rule_type: {rule_type}'
-                          f' \n expected: {expected_flows} '
-                          f'\n generated: {generated_flows}')
+                    print(
+                        f'inconsistency between expected and generated flows category: {category}, rule_type: {rule_type}'
+                        f' \n expected: {expected_flows} '
+                        f'\n generated: {generated_flows}')
     except Exception as e:
         traceback.print_exc()
         return False

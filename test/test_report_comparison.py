@@ -1,11 +1,11 @@
 import copy
 import json
 import os
-from .test_json_results import compare_persistency, compare_flows
+from .test_json_results import compare_persistency, compare_flows, check_json, GROUND_TRUTH_FILE_NAME
 
 LANG = 'java'
 PROJECT = 'bank'
-FILE_NAME = 'ground_truth_report.json'
+FILE_NAME = GROUND_TRUTH_FILE_NAME
 
 
 def test_compare_persistency_func():
@@ -45,3 +45,7 @@ def test_compare_flows_func():
     report2['results']['flows_result']['flows_artifacts']['Phone']['sensitive-info-to-external-functions'].pop()
     assert not compare_flows(report_expected=report1,
                              report_generated=report2), 'As we removed two flows expecting False'
+
+
+def test_check_json():
+    assert check_json(os.path.join(LANG, PROJECT, FILE_NAME)) == 0, 'identical reports, expecting 0'
