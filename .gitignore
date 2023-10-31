@@ -31,7 +31,19 @@ _ReSharper*/
 #Nuget packages folder
 packages/
 *.dll
-/.classpath
+*.classpath*
 /.settings/org.eclipse.m2e.core.prefs
 /.settings/org.eclipse.jdt.core.prefs
 /.project
+
+.DS_Store
+.idea/
+*.class
+*.jar
+java/bank/source/target/*
+/.settings/*
+java/bank/source/.settings
+java/bank/source/.classpath
+java/bank/source/.project
+
+test/__pycache__/
