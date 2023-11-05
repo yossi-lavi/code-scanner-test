@@ -10,12 +10,12 @@ from collections import defaultdict
 GROUND_TRUTH_FILE_NAME = 'ground_truth_report.json'
 
 
-def ground_truth_path(generated_report):
+def ground_truth_path(generated_report, base_folder):
     assert 'language' in generated_report
     language = generated_report['language']
 
     if language == 'java':
-        path = os.path.join(language, 'bank', GROUND_TRUTH_FILE_NAME)
+        path = os.path.join(base_folder, language, 'bank', GROUND_TRUTH_FILE_NAME)
 
     else:
         assert 'not supported yet'
@@ -24,9 +24,9 @@ def ground_truth_path(generated_report):
     return path
 
 
-def check_json(filename):
+def check_json(root_folder, report_filename):
     # Read and load the JSON from the file
-    with open(filename, 'r') as file:
+    with open(report_filename, 'r') as file:
         generated_report = json.load(file)
 
     # Check if the status field is valued "Failed"
@@ -35,7 +35,7 @@ def check_json(filename):
         print(generated_report.get('failure_reason'))
         return 1
 
-    with open(ground_truth_path(generated_report)) as report_json:
+    with open(ground_truth_path(generated_report, base_folder=root_folder)) as report_json:
         ground_truth_report = json.load(report_json)
 
     # Define the required engines
@@ -129,15 +129,17 @@ def check_existence_of_artifacts(report_generated):
 def main():
     parser = argparse.ArgumentParser(
         description="check JSON report",
-        usage="%(prog)s <json file>"
+        usage="%(prog)s <root folder> <json file>"
     )
+
+    parser.add_argument("root_folder", type=str, help="The root folder of the source code")
 
     # Define arguments
     parser.add_argument("json", type=str, help="The name of the json file to process.")
 
     # Parse arguments
     args = parser.parse_args()
-    return check_json(args.json)
+    return check_json(root_folder=args.root_folder, report_filename=args.json)
 
 
 if __name__ == "__main__":
