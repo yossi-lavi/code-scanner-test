@@ -48,4 +48,5 @@ def test_compare_flows_func():
 
 
 def test_check_json():
-    assert check_json(os.path.join(LANG, PROJECT, FILE_NAME)) == 0, 'identical reports, expecting 0'
+    assert check_json(report_filename=os.path.join(LANG, PROJECT, FILE_NAME), root_folder=os.getcwd()) == 0, \
+        'identical reports, expecting 0'
