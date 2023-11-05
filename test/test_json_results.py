@@ -129,7 +129,7 @@ def check_existence_of_artifacts(report_generated):
 def main():
     parser = argparse.ArgumentParser(
         description="check JSON report",
-        usage="%(prog)s <json file>"
+        usage="%(prog)s <root folder> <json file>"
     )
 
     parser.add_argument("root_folder", type=str, help="The root folder of the source code")
