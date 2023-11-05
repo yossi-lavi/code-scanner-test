@@ -12,6 +12,8 @@ import rib.dao.AddressDao;
 import rib.entity.Address;
 import rib.entity.Client;
 import rib.util.HibernateUtils;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 public class AddressService {
 	private static SessionFactory sessionFactory = HibernateUtils.getSessionFactory();
@@ -19,7 +21,7 @@ public class AddressService {
 	AddressDao addressDao = new AddressDao();
 	Scanner scanner = new Scanner(System.in);
 	Client client = new Client();
-
+	private Logger logger = LogManager.getLogger(AddressService.class.getName());
 	public AddressService() throws Exception {
 		super();
 		this.addressDao = new AddressDao();
@@ -32,6 +34,7 @@ public class AddressService {
 				"INSERT INTO Address(City, County, HouseNumber, BlockOfFlatsNumber, Apartment, Street) values(?1,?2,?3,?4,?5,?6)");
 		System.out.println("Daca un parametru este momentan indisponibil, introduceti \"-\"");
 		System.out.print("Oras: ");
+		System.out.print("address: " + address.toString());
 		address.setCity(scanner.next());
 		System.out.print("Judet: ");
 		address.setCounty(scanner.next());
@@ -114,6 +117,7 @@ public class AddressService {
 		addressDao.openCurrentSessionwithTransaction();
 		addressDao.persist(address);
 		addressDao.closeCurrentSessionwithTransaction();
+		logger.info("saved address" + address.toString());
 	}
 
 	public List<Address> showAllAddresses() {

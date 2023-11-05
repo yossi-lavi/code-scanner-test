@@ -1,5 +1,10 @@
 package rib.service;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -23,6 +28,7 @@ public class ClientService {
 	BankAccount bankAccount = new BankAccount();
 	CustomerAdvisors customerAdvisors = new CustomerAdvisors();
 	Address address = new Address();
+	
 
 	public ClientService() throws Exception {
 		super();
@@ -55,7 +61,7 @@ public class ClientService {
 		query.setParameter(4, client.getCnp());
 		query.setParameter(5, client.getEmail().equals("-") ? null : client.getEmail());
 		query.setParameter(6, client.getPhoneNumber());
-		System.err.println("Client adaugat cu succes!");
+		System.err.println("Client adaugat cu succes!" + client.toString());
 		query.executeUpdate();
 		session.getTransaction().commit();
 	}
@@ -152,6 +158,36 @@ public class ClientService {
 		clientDao.openCurrentSession();
 		List<Client> lista = clientDao.orderByIdDesc();
 		clientDao.closeCurrentSession();
+		return lista;
+	}
+	
+	public List<Client> getAllClientsUsingJDBC(Connection conn) throws Exception {
+		AddressService  addressService = new AddressService();
+		// This will not work !!! use just for testing
+		List<Client> lista = new ArrayList<Client>();
+		String query = "SELECT * FROM Clients";
+	    try (Statement stmt = conn.createStatement()) {
+	      ResultSet rs = stmt.executeQuery(query);
+	      while (rs.next()) {
+	        String id = rs.getString("ID");
+	        String firstName = rs.getString("FIRST_NAME");
+	        String lastName = rs.getString("LAST_NAME");
+	        String email = rs.getString("EMAIL");
+	        String phoneNumber = rs.getString("PHONE");
+	        long cnp = rs.getInt("CNP");
+	        Address address = null;
+	        CustomerAdvisors customerAdvisors = null;
+	        BankAccount bankAccount = null;
+	        Client client = new Client(id, firstName, lastName, cnp, email, address,
+	        		phoneNumber, customerAdvisors, bankAccount);
+	        lista.add(client);
+	        addressService.saveAddress(address);
+	      }
+	    
+	    } catch (SQLException e) {
+	      
+	    }
+	    
 		return lista;
 	}
 
