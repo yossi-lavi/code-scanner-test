@@ -88,20 +88,32 @@ def compare_persistency(report_generated, report_expected):
 
 
 def compare_flows(report_generated, report_expected):
+    if 'Container Pii' in report_generated['results']['flows_result']['flows_artifacts']:
+        report_generated['results']['flows_result']['flows_artifacts']['Encapsulated'] = \
+            report_generated['results']['flows_result']['flows_artifacts'].pop('Container Pii')
+
     compare_test_passed = True
     try:
         for category in report_expected['results']['flows_result']['flows_artifacts']:
             for rule_type in report_expected['results']['flows_result']['flows_artifacts'][category]:
                 flow_in_expected = report_expected['results']['flows_result']['flows_artifacts'][category][rule_type]
-                flow_in_generated = report_generated['results']['flows_result']['flows_artifacts'][category][rule_type]
-                expected_flows = {flow_unique_key(flow) for flow in flow_in_expected}
-                generated_flows = {flow_unique_key(flow) for flow in flow_in_generated}
-                if expected_flows != generated_flows:
-                    compare_test_passed = False
+                if category not in report_generated['results']['flows_result']['flows_artifacts'] or \
+                        rule_type not in report_generated['results']['flows_result']['flows_artifacts'][category]:
                     print(
-                        f'inconsistency between expected and generated flows category: {category}, rule_type: {rule_type}'
-                        f' \n expected: {expected_flows} '
-                        f'\n generated: {generated_flows}')
+                        f'inconsistency between expected and generated flows for category: '
+                        f'{category}, rule_type: {rule_type} one of them not found in generated report')
+                    compare_test_passed = False
+                else:
+                    flow_in_generated = report_generated['results']['flows_result']['flows_artifacts'][category][
+                        rule_type]
+                    expected_flows = {flow_unique_key(flow) for flow in flow_in_expected}
+                    generated_flows = {flow_unique_key(flow) for flow in flow_in_generated}
+                    if expected_flows != generated_flows:
+                        compare_test_passed = False
+                        print(
+                            f'inconsistency between expected and generated flows category: {category}, rule_type: {rule_type}'
+                            f' \n expected: {expected_flows} '
+                            f'\n generated: {generated_flows}')
     except Exception as e:
         traceback.print_exc()
         return False
