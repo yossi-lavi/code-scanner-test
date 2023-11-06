@@ -47,6 +47,16 @@ def test_compare_flows_func():
                              report_generated=report2), 'As we removed two flows expecting False'
 
 
+# In this test we make sure the Container PII key is replaced with Encapsulated (due to a bug in the offline scanner
+# that keeps on using this key)
+def test_compare_flows_func_with_container_pii():
+    with open(os.path.join(LANG, PROJECT, FILE_NAME), 'r') as file:
+        report1 = json.load(file)
+    with open(os.path.join("test", "report_with_container_pii_for_testing_only.json"), 'r') as file:
+        report2 = json.load(file)
+    assert compare_flows(report_expected=report1, report_generated=report2), 'identical reports, expecting True'
+
+
 def test_check_json():
     assert check_json(report_filename=os.path.join(LANG, PROJECT, FILE_NAME), root_folder=os.getcwd()) == 0, \
         'identical reports, expecting 0'
