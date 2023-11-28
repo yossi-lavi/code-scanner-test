@@ -123,7 +123,12 @@ def compare_flows(report_generated, report_expected):
 
 def flow_unique_key(flow):
     artifact_name = "_".join(flow['artifact_name'].split("_")[:-1])
-    return f"{artifact_name}_{flow['metadata']['source']['metadata']['variable_name']}"
+    variable_name = ''
+    if 'variable_name' in flow['metadata']['source']['metadata']:
+        variable_name = flow['metadata']['source']['metadata']['variable_name']
+    elif 'variable_name' in flow['metadata']['sink']['metadata']:
+        variable_name = flow['metadata']['sink']['metadata']['variable_name']
+    return f"{artifact_name}_{variable_name}"
 
 
 def check_existence_of_artifacts(report_generated):
