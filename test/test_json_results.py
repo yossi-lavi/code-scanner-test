@@ -16,6 +16,8 @@ def ground_truth_path(generated_report, base_folder):
 
     if language == 'java':
         path = os.path.join(base_folder, language, 'bank', GROUND_TRUTH_FILE_NAME)
+    elif language == 'go':
+        path = os.path.join(base_folder, language, 'go-test-project', GROUND_TRUTH_FILE_NAME)
 
     else:
         assert 'not supported yet'
