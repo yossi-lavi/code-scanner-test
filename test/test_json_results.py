@@ -90,9 +90,13 @@ def compare_persistency(report_generated, report_expected):
 
 
 def compare_flows(report_generated, report_expected):
+    # This is a workaround to replace Container PII label with Encapsulated label
     if 'Container Pii' in report_generated['results']['flows_result']['flows_artifacts']:
         report_generated['results']['flows_result']['flows_artifacts']['Encapsulated'] = \
             report_generated['results']['flows_result']['flows_artifacts'].pop('Container Pii')
+    if 'Container Pii' in report_expected['results']['flows_result']['flows_artifacts']:
+        report_expected['results']['flows_result']['flows_artifacts']['Encapsulated'] = \
+            report_expected['results']['flows_result']['flows_artifacts'].pop('Container Pii')
 
     compare_test_passed = True
     try:
